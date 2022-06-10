@@ -1,0 +1,23 @@
+version: "3.9"
+   
+services:  
+  oracledb:
+    image: gvenzl/oracle-xe
+    ports:
+      - 1521:1521
+    environment:
+      ORACLE_PASSWORD: password
+
+  app:
+    build: docker/base
+    working_dir: /users/root/app/dist
+    command: npx nodemon -- index.js
+    environment:
+      - NODE_ORACLEDB_USER=system
+      - NODE_ORACLEDB_PASSWORD=password
+      - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
+      - NODE_ENV=production
+    volumes:
+      - ./:/users/root/app      
+    depends_on:
+      - oracledb

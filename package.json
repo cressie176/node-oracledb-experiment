@@ -1,0 +1,27 @@
+{
+  "name": "oracledb-experiment",
+  "version": "1.0.0",
+  "description": "Experimenting with Node.js and OracleDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cressie176/node-oracledb-experiment.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cressie176/node-oracledb-experiment/issues"
+  },
+  "homepage": "https://github.com/cressie176/node-oracledb-experiment#readme",
+  "dependencies": {
+    "oracledb": "^5.4.0",
+    "tripitaka": "^3.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16",
+    "zunit": "^3.2.1"
+  }
+}
