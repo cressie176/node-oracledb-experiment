@@ -8,6 +8,13 @@ services:
     environment:
       ORACLE_PASSWORD: password
 
+  oracledb-test:
+    image: gvenzl/oracle-xe
+    ports:
+      - 1522:1521
+    environment:
+      ORACLE_PASSWORD: password      
+
   app:
     build: docker/base
     working_dir: /users/root/app/dist
@@ -16,7 +23,9 @@ services:
       - NODE_ORACLEDB_USER=system
       - NODE_ORACLEDB_PASSWORD=password
       - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
+      - NODE_ORACLEDB_MIGRATE=true      
       - NODE_ENV=production
+      - DEBUG=marv:*
     volumes:
       - ./:/users/root/app      
     depends_on:
@@ -29,9 +38,10 @@ services:
     environment:
       - NODE_ORACLEDB_USER=system
       - NODE_ORACLEDB_PASSWORD=password
-      - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
+      - NODE_ORACLEDB_CONNECTION_STRING=oracledb-test:1521/XE
+      - NODE_ORACLEDB_MIGRATE=true
       - NODE_ENV=test
     volumes:
       - ./:/users/root/app      
     depends_on:
-      - oracledb      
+      - oracledb-test   

@@ -4,11 +4,13 @@
   "description": "Experimenting with Node.js and OracleDB",
   "main": "index.js",
   "scripts": {
+    "dev": "npm run build && docker-compose run app",
     "test": "npm run build && docker-compose run test",
-    "clean": "rimraf dist/src dist/test",
+    "clean": "rimraf dist/*",
     "build": "npm run clean && tsc",
-    "dev": " run run build && docker-compose run app",
-    "postbuild": "cpy '**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' ../dist/ --cwd=src/ --no-overwrite --parents"
+    "postbuild": "npm run copysrc && npm run copytest",
+    "copysrc": "cpy --no-overwrite 'src/**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' dist/src",
+    "copytest": "cpy --no-overwrite 'test/**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' dist/test"
   },
   "repository": {
     "type": "git",
@@ -22,10 +24,13 @@
   "homepage": "https://github.com/cressie176/node-oracledb-experiment#readme",
   "dependencies": {
     "@types/node": "^17.0.42",
+    "marv": "^5.0.0",
+    "marv-oracledb-driver": "^1.0.1",
     "oracledb": "^5.4.0",
-    "tripitaka": "^3.0.1"
+    "tripitaka": "^3.0.2"
   },
   "devDependencies": {
+    "@types/marv": "^5.0.0",
     "@types/oracledb": "^5.2.3",
     "cpy-cli": "^4.1.0",
     "nodemon": "^2.0.16",

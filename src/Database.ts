@@ -1,66 +1,92 @@
 import oracledb, { InitialiseOptions, ConnectionAttributes } from 'oracledb';
 import { setTimeout } from 'timers/promises';
-import { Logger } from 'tripitaka';
-const logger = new Logger();
+import marv from 'marv/api/promise';
+import driver from 'marv-oracledb-driver';
+import path from 'path';
+import logger from './LoggerFactory';
 
 type DatabaseOptions = {
-  libDir: string | undefined,
-  user: string | undefined,
-  password: string | undefined,
-  connectionString: string | undefined,
-  retries: number | undefined,
-  interval: number | undefined,
+  libDir: string,
+  user: string,
+  password: string,
+  connectionString: string,
+  maxAttempts?: number | undefined,
+  retryInterval?: number | undefined,
+  migrate?: boolean | undefined,
+}
+
+const defaultDatabaseOptions = {
+  maxAttempts: 100,
+  retryInterval: 1000,
+  migrate: false,
 }
 
 class Database {
-  _connection: oracledb.Connection;
+  private _options: DatabaseOptions;
+  private _connection: oracledb.Connection;
 
-  async start(options?: DatabaseOptions) {
-    const { 
-      libDir = process.env.LD_LIBRARY_PATH,
-      user = process.env.NODE_ORACLEDB_USER,
-      password = process.env.NODE_ORACLEDB_PASSWORD,
-      connectionString = process.env.NODE_ORACLEDB_CONNECTION_STRING,
-      retries = Number(process.env.NODE_ORACLEDB_CONNECTION_RETRIES) || 100, 
-      interval = Number(process.env.NODE_ORACLEDB_CONNECTION_INTERVAL) || 1000, 
-    } = options || {};
+  constructor(options: DatabaseOptions) {
+    this._options = { ...defaultDatabaseOptions, ...options };
+    this._connection = null;
+  }
 
-    this._init({ libDir });
-    await this._connect(user, password, connectionString, retries, interval);
-    await this._validate();
+  async start() {
+    this._init();
+    await this._connect();
+    if (this._options.migrate) await this._migrate();
+    await this.validate();
   }
 
   async stop() {
     this._disconnect();
   }
 
-  _init(options: InitialiseOptions) {
-    oracledb.initOracleClient(options);    
+  _init() {
+    oracledb.initOracleClient(this._options);    
   }
 
-  async _connect(user: string, password: string, connectionString: string, retries: number, interval: number) {
-    let attempt = 0;
+  async _migrate() {
+    const { user, password, connectionString } = this._options;    
+    const directory = path.resolve('src', 'sql', 'migrations');
+    const migrations = await marv.scan(directory);
+    await marv.migrate(migrations, driver({ 
+      oracledb, 
+      logger,
+      connection: {
+        user, password, connectionString
+      }
+    }));
+  }
+
+  async _connect() {
+    const { user, password, connectionString, maxAttempts, retryInterval } = this._options;    
+    let attempt = 0;    
+    let failure;
     do {
       try {
         attempt++;
-        logger.info(`Connecting to ${connectionString} attempt ${attempt} of ${retries}`)
-        this._connection = await oracledb.getConnection({ user, password, connectionString });
+        failure = null;
+        logger.info(`Connecting to ${connectionString} attempt ${attempt} of ${maxAttempts}`)
+        this._connection = await oracledb.getConnection(this._options);
       } catch (error) {
         logger.error(error);
-        await setTimeout(interval);
+        failure = error;
+        if (attempt < maxAttempts) await setTimeout(retryInterval);
       }
-    } while (!this._connection && attempt <= retries);   
+    } while (!this._connection && attempt < maxAttempts);  
+    if (failure) throw failure;
     logger.info(`Successfully connected to ${connectionString}`)
   }
 
-  async _validate() {
+  async validate() {
     const result = await this._connection.execute('SELECT 1 FROM DUAL');
-    if (!result || result.rows.length !== 1) throw new Error(`Test query failed`);
+    return result && result.rows && result.rows.length === 1;
   }
 
   async _disconnect() {
     if (!this._connection) return;
     await this._connection.close();
+    this._connection = null;
   }
 }
 
