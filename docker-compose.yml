@@ -11,7 +11,7 @@ services:
   app:
     build: docker/base
     working_dir: /users/root/app/dist
-    command: npx nodemon -- index.js
+    command: npx nodemon -L src/index.js
     environment:
       - NODE_ORACLEDB_USER=system
       - NODE_ORACLEDB_PASSWORD=password
@@ -21,3 +21,17 @@ services:
       - ./:/users/root/app      
     depends_on:
       - oracledb
+
+  test:
+    build: docker/base
+    working_dir: /users/root/app/dist
+    command: npx nodemon -L ts-node test
+    environment:
+      - NODE_ORACLEDB_USER=system
+      - NODE_ORACLEDB_PASSWORD=password
+      - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
+      - NODE_ENV=test
+    volumes:
+      - ./:/users/root/app      
+    depends_on:
+      - oracledb      

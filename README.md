@@ -3,5 +3,10 @@ Experimenting with Node.js and OracleDB
 
 ## Local Development
 ```
-docker-compose up --build
+npm run dev
+```
+
+## Running Tests
+```
+npm run test
 ```

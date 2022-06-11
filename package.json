@@ -4,7 +4,11 @@
   "description": "Experimenting with Node.js and OracleDB",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run build && docker-compose run test",
+    "clean": "rimraf dist/src dist/test",
+    "build": "npm run clean && tsc",
+    "dev": " run run build && docker-compose run app",
+    "postbuild": "cpy '**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' ../dist/ --cwd=src/ --no-overwrite --parents"
   },
   "repository": {
     "type": "git",
@@ -17,11 +21,17 @@
   },
   "homepage": "https://github.com/cressie176/node-oracledb-experiment#readme",
   "dependencies": {
+    "@types/node": "^17.0.42",
     "oracledb": "^5.4.0",
     "tripitaka": "^3.0.1"
   },
   "devDependencies": {
+    "@types/oracledb": "^5.2.3",
+    "cpy-cli": "^4.1.0",
     "nodemon": "^2.0.16",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3",
     "zunit": "^3.2.1"
   }
 }
