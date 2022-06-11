@@ -5,7 +5,7 @@ import driver from 'marv-oracledb-driver';
 import path from 'path';
 import logger from './LoggerFactory';
 
-type DatabaseOptions = {
+export type DatabaseOptions = {
   libDir: string;
   user: string;
   password: string;
@@ -21,13 +21,14 @@ const defaultDatabaseOptions = {
   migrate: false
 };
 
-class Database {
+class Database implements Component {
   private _options: DatabaseOptions;
   private _connection: oracledb.Connection;
 
   constructor(options: DatabaseOptions) {
     this._options = { ...defaultDatabaseOptions, ...options };
     this._connection = null;
+    oracledb.autoCommit = true;
   }
 
   async start() {
@@ -64,26 +65,30 @@ class Database {
   }
 
   async _connect() {
-    const { user, password, connectionString, maxAttempts, retryInterval } = this._options;
+    if (this._connection) throw new Error('Already connected');
+    const { maxAttempts, retryInterval } = this._options;
     let attempt = 0;
-    let failure;
     do {
-      try {
-        attempt++;
-        failure = null;
-        logger.info(`Connecting to ${connectionString} attempt ${attempt} of ${maxAttempts}`);
-        this._connection = await oracledb.getConnection(this._options);
-      } catch (error) {
-        logger.error(error);
-        failure = error;
-        if (attempt < maxAttempts) await setTimeout(retryInterval);
-      }
+      const err = await this._attemptConnection(++attempt);
+      if (err && attempt === maxAttempts) throw err;
+      if (err) await setTimeout(retryInterval);
     } while (!this._connection && attempt < maxAttempts);
-    if (failure) throw failure;
-    logger.info(`Successfully connected to ${connectionString}`);
+  }
+
+  async _attemptConnection(attempt: number) {
+    const { user, password, connectionString, maxAttempts } = this._options;
+    try {
+      logger.info(`Connecting to ${connectionString} attempt ${attempt} of ${maxAttempts}`);
+      this._connection = await oracledb.getConnection(this._options);
+      logger.info(`Successfully connected to ${connectionString}`);
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
   }
 
   async validate() {
+    if (!this._connection) throw new Error('Not connected');
     const result = await this._connection.execute('SELECT 1 FROM DUAL');
     return result && result.rows && result.rows.length === 1;
   }
