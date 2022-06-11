@@ -4,21 +4,20 @@ import Database from '../src/Database';
 import logger from '../src/LoggerFactory';
 
 export default describe('Database', () => {
-
   beforeEach(() => {
     logger.disable();
-  })
+  });
 
   afterEach(() => {
     logger.enable();
-  })
+  });
 
   it('should connect', async () => {
     const database = new Database({
       libDir: process.env.LD_LIBRARY_PATH,
       user: process.env.NODE_ORACLEDB_USER,
       password: process.env.NODE_ORACLEDB_PASSWORD,
-      connectionString: process.env.NODE_ORACLEDB_CONNECTION_STRING,
+      connectionString: process.env.NODE_ORACLEDB_CONNECTION_STRING
     });
 
     await database._connect();
@@ -32,14 +31,17 @@ export default describe('Database', () => {
       user: 'invalid',
       password: process.env.NODE_ORACLEDB_PASSWORD,
       connectionString: process.env.NODE_ORACLEDB_CONNECTION_STRING,
-      maxAttempts: 1,
+      maxAttempts: 1
     });
 
-    await rejects(async () => {
-      await database._connect();
-    }, (err: any) => {
-      eq(err.errorNum, 1017);
-      return true;
-    })
-  });  
+    await rejects(
+      async () => {
+        await database._connect();
+      },
+      (err: any) => {
+        eq(err.errorNum, 1017);
+        return true;
+      }
+    );
+  });
 });

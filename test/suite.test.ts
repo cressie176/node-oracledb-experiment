@@ -1,5 +1,4 @@
 import { Suite } from 'zunit';
-import databaseTests from './Database.test' ;
+import databaseTests from './Database.test';
 
-export default new Suite('All Tests')
-  .add(databaseTests);
+export default new Suite('All Tests').add(databaseTests);

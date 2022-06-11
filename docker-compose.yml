@@ -1,6 +1,6 @@
-version: "3.9"
-   
-services:  
+version: '3.9'
+
+services:
   oracledb:
     image: gvenzl/oracle-xe
     ports:
@@ -13,7 +13,7 @@ services:
     ports:
       - 1522:1521
     environment:
-      ORACLE_PASSWORD: password      
+      ORACLE_PASSWORD: password
 
   app:
     build: docker/base
@@ -23,11 +23,11 @@ services:
       - NODE_ORACLEDB_USER=system
       - NODE_ORACLEDB_PASSWORD=password
       - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
-      - NODE_ORACLEDB_MIGRATE=true      
+      - NODE_ORACLEDB_MIGRATE=true
       - NODE_ENV=production
       - DEBUG=marv:*
     volumes:
-      - ./:/users/root/app      
+      - ./:/users/root/app
     depends_on:
       - oracledb
 
@@ -42,6 +42,6 @@ services:
       - NODE_ORACLEDB_MIGRATE=true
       - NODE_ENV=test
     volumes:
-      - ./:/users/root/app      
+      - ./:/users/root/app
     depends_on:
-      - oracledb-test   
+      - oracledb-test

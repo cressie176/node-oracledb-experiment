@@ -6,20 +6,20 @@ import path from 'path';
 import logger from './LoggerFactory';
 
 type DatabaseOptions = {
-  libDir: string,
-  user: string,
-  password: string,
-  connectionString: string,
-  maxAttempts?: number | undefined,
-  retryInterval?: number | undefined,
-  migrate?: boolean | undefined,
-}
+  libDir: string;
+  user: string;
+  password: string;
+  connectionString: string;
+  maxAttempts?: number | undefined;
+  retryInterval?: number | undefined;
+  migrate?: boolean | undefined;
+};
 
 const defaultDatabaseOptions = {
   maxAttempts: 100,
   retryInterval: 1000,
-  migrate: false,
-}
+  migrate: false
+};
 
 class Database {
   private _options: DatabaseOptions;
@@ -42,40 +42,45 @@ class Database {
   }
 
   _init() {
-    oracledb.initOracleClient(this._options);    
+    oracledb.initOracleClient(this._options);
   }
 
   async _migrate() {
-    const { user, password, connectionString } = this._options;    
+    const { user, password, connectionString } = this._options;
     const directory = path.resolve('src', 'sql', 'migrations');
     const migrations = await marv.scan(directory);
-    await marv.migrate(migrations, driver({ 
-      oracledb, 
-      logger,
-      connection: {
-        user, password, connectionString
-      }
-    }));
+    await marv.migrate(
+      migrations,
+      driver({
+        oracledb,
+        logger,
+        connection: {
+          user,
+          password,
+          connectionString
+        }
+      })
+    );
   }
 
   async _connect() {
-    const { user, password, connectionString, maxAttempts, retryInterval } = this._options;    
-    let attempt = 0;    
+    const { user, password, connectionString, maxAttempts, retryInterval } = this._options;
+    let attempt = 0;
     let failure;
     do {
       try {
         attempt++;
         failure = null;
-        logger.info(`Connecting to ${connectionString} attempt ${attempt} of ${maxAttempts}`)
+        logger.info(`Connecting to ${connectionString} attempt ${attempt} of ${maxAttempts}`);
         this._connection = await oracledb.getConnection(this._options);
       } catch (error) {
         logger.error(error);
         failure = error;
         if (attempt < maxAttempts) await setTimeout(retryInterval);
       }
-    } while (!this._connection && attempt < maxAttempts);  
+    } while (!this._connection && attempt < maxAttempts);
     if (failure) throw failure;
-    logger.info(`Successfully connected to ${connectionString}`)
+    logger.info(`Successfully connected to ${connectionString}`);
   }
 
   async validate() {
@@ -90,4 +95,4 @@ class Database {
   }
 }
 
-export default Database
+export default Database;

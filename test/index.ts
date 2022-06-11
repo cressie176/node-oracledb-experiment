@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 import { Harness, SpecReporter } from 'zunit';
-import suite from './suite.test' ;
+import suite from './suite.test';
 
 const interactive = String(process.env.CI).toLowerCase() !== 'true';
 const reporter = new SpecReporter({ colours: interactive });
