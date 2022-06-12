@@ -19,7 +19,6 @@ Experimenting with Node.js and OracleDB
   - [POST /api/user-account/reset](#post-apiuser-accountreset)
 - [Design Decisions](#design-decisions)
 - [Further Reading](#further-reading)
-- [todo](#todo)
 
 ## Local Setup (Once Only)
 
