@@ -4,7 +4,6 @@
   "description": "Experimenting with Node.js and OracleDB",
   "main": "dist/src/index.js",
   "scripts": {
-    "prettier-format": "prettier --config .prettierrc --write .",
     "dev": "npm run build && docker-compose run --service-ports --no-TTY app",
     "test": "npm run build && docker-compose run --service-ports --no-TTY test",
     "clean": "rimraf dist/*",
