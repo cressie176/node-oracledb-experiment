@@ -6,7 +6,5 @@ export type NotFoundResponse = {
 };
 
 export default () => (req: Request, res: Response, next: NextFunction) => {
-  logger.error(new Error('Not Found'));
-  res.status(404);
-  res.json({ message: 'Not Found' });
+  res.status(404).json({ message: 'Not Found' });
 };
