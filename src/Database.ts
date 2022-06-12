@@ -26,7 +26,6 @@ const defaultDatabaseOptions = {
 class Database implements Component {
   private _options: DatabaseOptions;
   private _connection: oracledb.Connection;
-  private _initialised: any;
 
   constructor(options: DatabaseOptions) {
     this._options = { ...defaultDatabaseOptions, ...options };
