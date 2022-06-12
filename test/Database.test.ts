@@ -12,6 +12,7 @@ export default describe('Database', () => {
   });
 
   afterEach(async () => {
+    await database.deleteTestData();
     await database.stop();
   });
 
@@ -108,20 +109,83 @@ export default describe('Database', () => {
   describe('create user account', () => {
     it('should create a user account', async () => {
       await startNewDatabase();
-      await database.createUserAccount({ username: 'gandalf', password: 'friend', system: 'Moria' });
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+
+      const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+
+      eq(userAccount.system, 'Moria');
+      eq(userAccount.username, 'Gandalf1954');
+      eq(userAccount.password, 'friend');
+      eq(userAccount.lockedAt, null);
     });
   });
 
   describe('reset user account', () => {
     it('should reset a user account', async () => {
       await startNewDatabase();
-      await database.createUserAccount({ username: 'gandalf', password: 'friend', system: 'Moria' });
-      await database.resetUserAccount({ username: 'gandalf', password: 'enemy', system: 'Moria' });
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+      await database.lockUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+      let userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+      ok(userAccount.lockedAt);
+
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+
+      userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+      eq(userAccount.password, 'enemy');
+      eq(userAccount.lockedAt, null);
+    });
+
+    it('should tolerate reseting an unlocked user account', async () => {
+      await startNewDatabase();
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+
+      const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+      eq(userAccount.password, 'enemy');
+      eq(userAccount.lockedAt, null);
+    });
+
+    it('should ignore other user accounts in the same system', async () => {
+      await startNewDatabase();
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+      await database.createUserAccount({ system: 'Moria', username: 'Frodo2020', password: 'whatever' });
+
+      await database.lockUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+      await database.lockUserAccount({ system: 'Moria', username: 'Frodo2020' });
+
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+
+      const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Frodo2020' });
+      ok(userAccount.lockedAt);
+    });
+
+    it('should ignore user accounts in other systems', async () => {
+      await startNewDatabase();
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+      await database.createUserAccount({ system: 'The Shire', username: 'Gandalf1954', password: 'friend' });
+
+      await database.lockUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+      await database.lockUserAccount({ system: 'The Shire', username: 'Gandalf1954' });
+
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+
+      const userAccount = await database.getUserAccount({ system: 'The Shire', username: 'Gandalf1954' });
+      ok(userAccount.lockedAt);
+    });
+
+    it('should report missing user accounts', async () => {
+      await startNewDatabase();
+      await rejects(database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' }), (err: Error) => {
+        eq(err.message, 'Error reseting user account for Moria/Gandalf1954');
+        return true;
+      });
     });
   });
 
   async function startNewDatabase() {
     database = new Database();
     await database.start();
+    await database.deleteTestData();
   }
 });

@@ -78,9 +78,9 @@ sqlplus app_user/app_password@XEPDB1
 | NODE_ENV                                  | String  |         | Set to one of "production", "development" or "test". Should be set to "production" unless you know what you are doing                                                                                                                         |
 | LD_LIBRARY_PATH                           | String  |         | File path to the oracle client libraries                                                                                                                                                                                                      |
 | NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE | Boolean | false   | Throws an error if the connection is used concurrently. Not recommended in production. See [oracledb.errorOnConcurrentExecute](https://oracle.github.io/node-oracledb/doc/api.html#-325-oracledberroronconcurrentexecute).                    |
-| NODE_ORACLEDB_USER                        | String  |         | The [node oracledb}(https://www.npmjs.com/package/oracledb) user                                                                                                                                                                              |
-| NODE_ORACLEDB_PASSWORD                    | String  |         | The [node oracledb}(https://www.npmjs.com/package/oracledb) password                                                                                                                                                                          |
-| NODE_ORACLEDB_CONNECTION_STRING           | String  |         | The [node oracledb}(https://www.npmjs.com/package/oracledb) connection string                                                                                                                                                                 |
+| NODE_ORACLEDB_USER                        | String  |         | The [node oracledb](https://www.npmjs.com/package/oracledb) user                                                                                                                                                                              |
+| NODE_ORACLEDB_PASSWORD                    | String  |         | The [node oracledb](https://www.npmjs.com/package/oracledb) password                                                                                                                                                                          |
+| NODE_ORACLEDB_CONNECTION_STRING           | String  |         | The [node oracledb](https://www.npmjs.com/package/oracledb) connection string                                                                                                                                                                 |
 | DATABASE_CONNECTION_MAX_ATTEMPTS          | Number  | 100     | The number of times the application will attempt to reconnect to the database on startup                                                                                                                                                      |
 | DATABASE_CONNECTION_RETRY_INTERVAL        | Number  | 1000    | The number of milliseconds the application will wait before attempting to reconnect to the database on startup                                                                                                                                |
 | DATABASE_MIGRATE                          | Boolean | false   | Will run database migrations on startup when true                                                                                                                                                                                             |
@@ -93,28 +93,45 @@ sqlplus app_user/app_password@XEPDB1
 
 #### Response Body
 
-| NAME | TYPE | NOTES |
-| ok | Boolean | true when the application is healthy, false otherwise
+| NAME | TYPE    | NOTES                                                 |
+| ---- | ------- | ----------------------------------------------------- |
+| ok   | Boolean | true when the application is healthy, false otherwise |
 
 ### POST /api/user-account
 
 #### Request Body
 
-TODO
+| NAME     | TYPE   | NOTES                                                    |
+| -------- | ------ | -------------------------------------------------------- |
+| system   | String | The name of the system to which the user account belongs |
+| username | String |                                                          |
+| password | String |                                                          |
 
-#### Response Body
+#### Response Codes
 
-TODO
+| CODE | NOTES                  |
+| ---- | ---------------------- |
+| 204  | Success (no content)   |
+| 400  | Bad Request            |
+| 500  | Internal Server Errror |
 
 ### POST /api/user-account/reset
 
 #### Request Body
 
-TODO
+| NAME     | TYPE   | NOTES                                                    |
+| -------- | ------ | -------------------------------------------------------- |
+| system   | String | The name of the system to which the user account belongs |
+| username | String |                                                          |
+| password | String |                                                          |
 
-#### Response Body
+#### Response Codes
 
-TODO
+| CODE | NOTES                  |
+| ---- | ---------------------- |
+| 204  | Success (no content)   |
+| 400  | Bad Request            |
+| 500  | Internal Server Errror |
 
 ## Design Decisions
 

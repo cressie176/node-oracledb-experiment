@@ -32,7 +32,7 @@ export default describe('Application', () => {
     });
 
     it('returns unhealthy', async () => {
-      database.stop();
+      await database.stop();
       const { ok } = await health();
       eq(ok, false);
     });
@@ -45,7 +45,7 @@ export default describe('Application', () => {
     });
 
     it('handles general errors', async () => {
-      database.stop();
+      await database.stop();
       const { message } = await error({ method: 'POST', path: '/api/user-account', statusCode: 500 });
       eq(message, 'Internal Server Error');
     });

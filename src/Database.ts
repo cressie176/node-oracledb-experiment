@@ -6,13 +6,17 @@ import marv from 'marv/api/promise';
 import driver from 'marv-oracledb-driver';
 import logger from './logger';
 
+const GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME = fs.readFileSync(path.join('src', 'sql', 'queries', 'get-user-account-by-system-and-username.sql'), 'utf-8');
 const CREATE_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'create-user-account.sql'), 'utf-8');
 const RESET_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'reset-user-account.sql'), 'utf-8');
+const LOCK_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'lock-user-account.sql'), 'utf-8');
+const DELETE_TEST_USER_ACCOUNTS_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'delete-test-user-accounts.sql'), 'utf-8');
 
 const DEFAULT_DATABASE_CONNECTION_MAX_ATTEMPTS = 100;
 const DEFAULT_DATABASE_CONNECTION_RETRY_INTERVAL = 1000;
 
 let oracleClientInitialised = false;
+let migrated = false;
 
 export type DatabaseOptions = {
   libDir?: string;
@@ -36,6 +40,13 @@ type CanonicalDatabaseOptions = {
   migrate: boolean;
 };
 
+type UserAccount = {
+  system: string;
+  username: string;
+  password: string;
+  lockedAt?: Date;
+};
+
 class Database implements Component {
   private _options: CanonicalDatabaseOptions;
   private _connection: oracledb.Connection;
@@ -48,7 +59,7 @@ class Database implements Component {
   async start() {
     if (!oracleClientInitialised) this._init();
     await this._connect();
-    if (this._options.migrate) await this._migrate();
+    if (this._options.migrate && !migrated) await this._migrate();
     await this.validate();
   }
 
@@ -62,12 +73,73 @@ class Database implements Component {
     return result && result.rows && result.rows.length === 1;
   }
 
+  async getUserAccount(criteria: { system: string; username: string }): Promise<UserAccount> {
+    const result = await this._connection.execute(
+      GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME,
+      {
+        system: {
+          val: criteria.system
+        },
+        username: {
+          val: criteria.username
+        }
+      },
+      { outFormat: oracledb.OUT_FORMAT_OBJECT }
+    );
+
+    if (result.rows.length > 1) throw new Error(`Multiple accounts for ${{ criteria }}`);
+    if (result.rows.length === 0) return null;
+    return result.rows[0] as any;
+  }
+
   async createUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
-    const result = await this._connection.execute('SELECT 1 FROM DUAL');
+    const { rowsAffected } = await this._connection.execute(CREATE_USER_ACCOUNT_SQL, {
+      system: {
+        val: system
+      },
+      username: {
+        val: username
+      },
+      password: {
+        val: password
+      }
+    });
+    if (rowsAffected !== 1) throw new Error(`Error inserting user account for ${system}/${username}`);
   }
 
   async resetUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
-    const result = await this._connection.execute('SELECT 1 FROM DUAL');
+    const { rowsAffected } = await this._connection.execute(RESET_USER_ACCOUNT_SQL, {
+      system: {
+        val: system
+      },
+      username: {
+        val: username
+      },
+      password: {
+        val: password
+      }
+    });
+
+    if (rowsAffected !== 1) throw new Error(`Error reseting user account for ${system}/${username}`);
+  }
+
+  async lockUserAccount({ system, username }: { system: string; username: string }) {
+    const result = await this._connection.execute(LOCK_USER_ACCOUNT_SQL, {
+      system: {
+        val: system
+      },
+      username: {
+        val: username
+      },
+      lockedAt: {
+        val: new Date()
+      }
+    });
+  }
+
+  async deleteTestData() {
+    if (!this._connection) return;
+    await this._connection.execute(DELETE_TEST_USER_ACCOUNTS_SQL);
   }
 
   private _getOptions({ libDir, errorOnConcurrentExecute, user, password, connectionString, maxAttempts, retryInterval, migrate }: DatabaseOptions = {}): CanonicalDatabaseOptions {
@@ -106,6 +178,7 @@ class Database implements Component {
         }
       })
     );
+    migrated = true;
   }
 
   private async _connect() {
