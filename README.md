@@ -81,10 +81,9 @@ https://oracle.github.io/node-oracledb/doc/api.html
 
    ```
    npm run dev
-
    ```
 
-1. Check it is working by navigating to [healthcheck url](http://localhost:3000/__/health)
+1. Check it is working by navigating to the [healthcheck url](http://localhost:3000/__/health)
 
 ## Running Tests
 
