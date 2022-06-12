@@ -14,14 +14,14 @@ export default describe('Database', () => {
   });
 
   it('should start', async () => {
-    const database = getDatabase();
+    const database = new Database();
     await database.start();
     const started = await database.validate();
     ok(started);
   });
 
   it('should reject repeated start attempts without stopping', async () => {
-    const database = getDatabase();
+    const database = new Database();
     await database.start();
     await rejects(
       () => database.start(),
@@ -33,7 +33,7 @@ export default describe('Database', () => {
   });
 
   it('should stop', async () => {
-    const database = getDatabase();
+    const database = new Database();
     await database.start();
     await database.stop();
     await rejects(
@@ -46,19 +46,19 @@ export default describe('Database', () => {
   });
 
   it('should tolerate stopping when never started', async () => {
-    const database = getDatabase();
+    const database = new Database();
     await database.stop();
   });
 
   it('should tolerate stopping repeatedly', async () => {
-    const database = getDatabase();
+    const database = new Database();
     await database.start();
     await database.stop();
     await database.stop();
   });
 
   it('should restart', async () => {
-    const database = getDatabase();
+    const database = new Database();
     await database.start();
     await database.stop();
     await database.start();
@@ -67,7 +67,7 @@ export default describe('Database', () => {
   });
 
   it('should throw connection errors', async () => {
-    const database = getDatabase({ user: 'invalid', maxAttempts: 1 });
+    const database = new Database({ user: 'invalid', maxAttempts: 1 });
 
     await rejects(
       () => database.start(),
@@ -82,7 +82,7 @@ export default describe('Database', () => {
     const maxAttempts = 3;
     const retryInterval = 100;
     const minDuration = maxAttempts * retryInterval;
-    const database = getDatabase({ user: 'invalid', maxAttempts: 3, retryInterval: 100 });
+    const database = new Database({ user: 'invalid', maxAttempts, retryInterval });
 
     const before = Date.now();
     await rejects(
@@ -97,14 +97,3 @@ export default describe('Database', () => {
     ok(after >= before + minDuration);
   });
 });
-
-function getDatabase(options?: any): Database {
-  return new Database({
-    libDir: process.env.LD_LIBRARY_PATH,
-    user: process.env.NODE_ORACLEDB_USER,
-    password: process.env.NODE_ORACLEDB_PASSWORD,
-    connectionString: process.env.NODE_ORACLEDB_CONNECTION_STRING,
-    maxAttempts: 100,
-    ...options
-  });
-}

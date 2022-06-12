@@ -5,32 +5,38 @@ import driver from 'marv-oracledb-driver';
 import path from 'path';
 import logger from './logger';
 
+const DEFAULT_DATABASE_CONNECTION_MAX_ATTEMPTS = 100;
+const DEFAULT_DATABASE_CONNECTION_RETRY_INTERVAL = 1000;
+
 let oracleClientInitialised = false;
 
 export type DatabaseOptions = {
-  libDir: string;
-  user: string;
-  password: string;
-  connectionString: string;
-  maxAttempts?: number | undefined;
-  retryInterval?: number | undefined;
-  migrate?: boolean | undefined;
+  libDir?: string;
+  user?: string;
+  password?: string;
+  connectionString?: string;
+  maxAttempts?: number | string | undefined;
+  retryInterval?: number | string | undefined;
+  migrate?: boolean | string | undefined;
 };
 
-const defaultDatabaseOptions = {
-  maxAttempts: 100,
-  retryInterval: 1000,
-  migrate: false
+type CanonicalDatabaseOptions = {
+  libDir: string | undefined;
+  user: string | undefined;
+  password: string | undefined;
+  connectionString: string | undefined;
+  maxAttempts: number;
+  retryInterval: number;
+  migrate: boolean;
 };
 
 class Database implements Component {
-  private _options: DatabaseOptions;
+  private _options: CanonicalDatabaseOptions;
   private _connection: oracledb.Connection;
 
-  constructor(options: DatabaseOptions) {
-    this._options = { ...defaultDatabaseOptions, ...options };
+  constructor(options?: DatabaseOptions) {
+    this._options = this._getOptions(options);
     this._connection = null;
-    oracledb.autoCommit = true;
   }
 
   async start() {
@@ -50,9 +56,22 @@ class Database implements Component {
     return result && result.rows && result.rows.length === 1;
   }
 
+  private _getOptions({ libDir, user, password, connectionString, maxAttempts, retryInterval, migrate }: DatabaseOptions = {}): CanonicalDatabaseOptions {
+    return {
+      libDir: libDir || process.env.LD_LIBRARY_PATH,
+      user: user || process.env.NODE_ORACLEDB_USER,
+      password: password || process.env.NODE_ORACLEDB_PASSWORD,
+      connectionString: connectionString || process.env.NODE_ORACLEDB_CONNECTION_STRING,
+      maxAttempts: Number(maxAttempts) || Number(process.env.DATABASE_CONNECTION_MAX_ATTEMPTS) || DEFAULT_DATABASE_CONNECTION_MAX_ATTEMPTS,
+      retryInterval: Number(retryInterval) || Number(process.env.DATABASE_CONNECTION_RETRY_INTERVAL) || DEFAULT_DATABASE_CONNECTION_RETRY_INTERVAL,
+      migrate: String(migrate).toUpperCase() === 'TRUE' || String(process.env.DATABASE_MIGRATE).toUpperCase() === 'TRUE'
+    };
+  }
+
   private _init() {
     if (oracleClientInitialised) return;
     oracledb.initOracleClient(this._options);
+    oracledb.autoCommit = true;
     oracleClientInitialised = true;
   }
 

@@ -22,11 +22,11 @@ services:
     working_dir: /users/root/app/dist
     command: npx nodemon -L src/index.js
     environment:
+      - NODE_ENV=production
       - NODE_ORACLEDB_USER=system
       - NODE_ORACLEDB_PASSWORD=password
       - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
-      - NODE_ORACLEDB_MIGRATE=true
-      - NODE_ENV=production
+      - DATABASE_MIGRATE=true
     volumes:
       - ./:/users/root/app
     depends_on:
@@ -37,11 +37,11 @@ services:
     working_dir: /users/root/app/dist
     command: npx nyc --reporter text-summary ts-node test
     environment:
+      - NODE_ENV=test
       - NODE_ORACLEDB_USER=system
       - NODE_ORACLEDB_PASSWORD=password
       - NODE_ORACLEDB_CONNECTION_STRING=oracledb-test:1521/XE
-      - NODE_ORACLEDB_MIGRATE=true
-      - NODE_ENV=test
+      - DATABASE_MIGRATE=true
     volumes:
       - ./:/users/root/app
     depends_on:

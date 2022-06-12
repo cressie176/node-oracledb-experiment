@@ -45,7 +45,6 @@ export default describe('Application', () => {
     });
 
     it('handles general errors', async () => {
-      const database = getDatabase();
       database.stop();
       const { message } = await error({ method: 'POST', path: '/api/user-account', statusCode: 500 });
       eq(message, 'Internal Server Error');
@@ -53,21 +52,9 @@ export default describe('Application', () => {
   });
 
   async function startApplication() {
-    database = getDatabase();
+    database = new Database({ migrate: true });
     application = new Application(database);
     await application.start();
-  }
-
-  function getDatabase() {
-    return new Database({
-      libDir: process.env.LD_LIBRARY_PATH,
-      user: process.env.NODE_ORACLEDB_USER,
-      password: process.env.NODE_ORACLEDB_PASSWORD,
-      connectionString: process.env.NODE_ORACLEDB_CONNECTION_STRING,
-      maxAttempts: Number(process.env.NODE_ORACLEDB_CONNECTION_MAX_ATTEMPTS) || undefined,
-      retryInterval: Number(process.env.NODE_ORACLEDB_CONNECTION_RETRY_INTERVAL) || undefined,
-      migrate: true
-    });
   }
 
   async function stopApplication() {

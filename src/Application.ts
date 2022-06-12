@@ -3,23 +3,13 @@ import WebServer from './WebServer';
 import logger from './logger';
 import routes from './routes';
 
-const defaultDatabase = new Database({
-  libDir: process.env.LD_LIBRARY_PATH,
-  user: process.env.NODE_ORACLEDB_USER,
-  password: process.env.NODE_ORACLEDB_PASSWORD,
-  connectionString: process.env.NODE_ORACLEDB_CONNECTION_STRING,
-  maxAttempts: Number(process.env.NODE_ORACLEDB_CONNECTION_MAX_ATTEMPTS) || undefined,
-  retryInterval: Number(process.env.NODE_ORACLEDB_CONNECTION_RETRY_INTERVAL) || undefined,
-  migrate: String(process.env.NODE_ORACLEDB_MIGRATE).toUpperCase() === 'TRUE'
-});
-
-const defaultPort = Number(process.env.HTTP_SERVER_PORT) || 3000;
+const DEFAULT_HTTP_PORT = Number(process.env.HTTP_SERVER_PORT) || 3000;
 
 export default class Application implements Component {
   private _database: Database;
   private _webServer: WebServer;
 
-  constructor(database: Database = defaultDatabase, port: number = defaultPort) {
+  constructor(database: Database = new Database(), port: number = DEFAULT_HTTP_PORT) {
     this._database = database;
     this._webServer = new WebServer({ app: routes(database), port });
   }

@@ -2,7 +2,7 @@
   "name": "oracledb-experiment",
   "version": "1.0.0",
   "description": "Experimenting with Node.js and OracleDB",
-  "main": "index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "prettier-format": "prettier --config .prettierrc --write .",
     "dev": "npm run build && docker-compose run --service-ports --no-TTY app",
