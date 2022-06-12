@@ -11,7 +11,7 @@ Experimenting with Node.js and OracleDB
 - [API](#api)
 - [Design Decisions](#design-decisions)
 - [Further Reading](#further-reading)
-- [todo](#todo
+- [todo](#todo)
 
 ## Local Setup (Once Only)
 
