@@ -12,4 +12,4 @@ jobs:
           node-version: 18
       - run: npm ci
       - run: npx prettier --check .
-      - run: npm test
+      - run: npm run github
