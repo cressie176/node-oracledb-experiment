@@ -1,9 +1,13 @@
-import oracledb, { InitialiseOptions, ConnectionAttributes } from 'oracledb';
+import fs from 'fs';
+import path from 'path';
 import { setTimeout } from 'timers/promises';
+import oracledb, { InitialiseOptions, ConnectionAttributes } from 'oracledb';
 import marv from 'marv/api/promise';
 import driver from 'marv-oracledb-driver';
-import path from 'path';
 import logger from './logger';
+
+const CREATE_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'create-user-account.sql'), 'utf-8');
+const RESET_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'reset-user-account.sql'), 'utf-8');
 
 const DEFAULT_DATABASE_CONNECTION_MAX_ATTEMPTS = 100;
 const DEFAULT_DATABASE_CONNECTION_RETRY_INTERVAL = 1000;
@@ -12,6 +16,7 @@ let oracleClientInitialised = false;
 
 export type DatabaseOptions = {
   libDir?: string;
+  errorOnConcurrentExecute?: boolean | string | undefined;
   user?: string;
   password?: string;
   connectionString?: string;
@@ -22,6 +27,7 @@ export type DatabaseOptions = {
 
 type CanonicalDatabaseOptions = {
   libDir: string | undefined;
+  errorOnConcurrentExecute: boolean | undefined;
   user: string | undefined;
   password: string | undefined;
   connectionString: string | undefined;
@@ -40,7 +46,7 @@ class Database implements Component {
   }
 
   async start() {
-    this._init();
+    if (!oracleClientInitialised) this._init();
     await this._connect();
     if (this._options.migrate) await this._migrate();
     await this.validate();
@@ -56,9 +62,18 @@ class Database implements Component {
     return result && result.rows && result.rows.length === 1;
   }
 
-  private _getOptions({ libDir, user, password, connectionString, maxAttempts, retryInterval, migrate }: DatabaseOptions = {}): CanonicalDatabaseOptions {
+  async createUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
+    const result = await this._connection.execute('SELECT 1 FROM DUAL');
+  }
+
+  async resetUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
+    const result = await this._connection.execute('SELECT 1 FROM DUAL');
+  }
+
+  private _getOptions({ libDir, errorOnConcurrentExecute, user, password, connectionString, maxAttempts, retryInterval, migrate }: DatabaseOptions = {}): CanonicalDatabaseOptions {
     return {
       libDir: libDir || process.env.LD_LIBRARY_PATH,
+      errorOnConcurrentExecute: String(errorOnConcurrentExecute).toUpperCase() === 'TRUE' || String(process.env.NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE).toUpperCase() === 'TRUE',
       user: user || process.env.NODE_ORACLEDB_USER,
       password: password || process.env.NODE_ORACLEDB_PASSWORD,
       connectionString: connectionString || process.env.NODE_ORACLEDB_CONNECTION_STRING,
@@ -69,9 +84,9 @@ class Database implements Component {
   }
 
   private _init() {
-    if (oracleClientInitialised) return;
     oracledb.initOracleClient(this._options);
     oracledb.autoCommit = true;
+    oracledb.errorOnConcurrentExecute = true;
     oracleClientInitialised = true;
   }
 

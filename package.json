@@ -6,7 +6,7 @@
   "scripts": {
     "prettier-format": "prettier --config .prettierrc --write .",
     "dev": "npm run build && docker-compose run --service-ports --no-TTY app",
-    "test": "npm run build && docker-compose run --no-TTY test",
+    "test": "npm run build && docker-compose run --service-ports --no-TTY test",
     "clean": "rimraf dist/*",
     "build": "npm run clean && tsc",
     "postbuild": "npm run copysrc && npm run copytest",

@@ -1,12 +1,14 @@
 version: '3.9'
 
 services:
-  oracledb:
+  oracledb-app:
     image: gvenzl/oracle-xe
     ports:
       - 1521:1521
     environment:
       ORACLE_PASSWORD: password
+      APP_USER: app_user
+      APP_USER_PASSWORD: app_password
 
   oracledb-test:
     image: gvenzl/oracle-xe
@@ -14,6 +16,8 @@ services:
       - 1522:1521
     environment:
       ORACLE_PASSWORD: password
+      APP_USER: test_user
+      APP_USER_PASSWORD: test_password
 
   app:
     build: docker/base
@@ -23,24 +27,28 @@ services:
     command: npx nodemon -L src/index.js
     environment:
       - NODE_ENV=production
-      - NODE_ORACLEDB_USER=system
-      - NODE_ORACLEDB_PASSWORD=password
-      - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
+      - LD_LIBRARY_PATH=/opt/instantclient_21_6
+      - NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE=true
+      - NODE_ORACLEDB_USER=app_user
+      - NODE_ORACLEDB_PASSWORD=app_password
+      - NODE_ORACLEDB_CONNECTION_STRING=oracledb-app:1521/XEPDB1
       - DATABASE_MIGRATE=true
     volumes:
       - ./:/users/root/app
     depends_on:
-      - oracledb
+      - oracledb-app
 
   test:
     build: docker/base
     working_dir: /users/root/app/dist
     command: npx nyc --reporter text-summary ts-node test
     environment:
+      - LD_LIBRARY_PATH=/opt/instantclient_21_6
+      - NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE=true
       - NODE_ENV=test
-      - NODE_ORACLEDB_USER=system
-      - NODE_ORACLEDB_PASSWORD=password
-      - NODE_ORACLEDB_CONNECTION_STRING=oracledb-test:1521/XE
+      - NODE_ORACLEDB_USER=test_user
+      - NODE_ORACLEDB_PASSWORD=test_password
+      - NODE_ORACLEDB_CONNECTION_STRING=oracledb-test:1521/XEPDB1
       - DATABASE_MIGRATE=true
     volumes:
       - ./:/users/root/app
