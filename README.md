@@ -167,6 +167,5 @@ According to the [documentation](https://oracle.github.io/node-oracledb/doc/api.
 
 ## TODO
 
-- Configure prettier to stage changes on pre-commit
 - Configure the watchers to detect changes and update the app container automatically
 - github action for test and build
