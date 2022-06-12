@@ -10,6 +10,8 @@ Experimenting with Node.js and OracleDB
 - [Configuration](#configuration)
 - [API](#api)
   - [GET /__/health](#get-__health)
+  - [POST /api/user-account](#post-apiuser-account)
+  - [POST /api/user-account/reset](#post-apiuser-accountreset)
 - [Design Decisions](#design-decisions)
 - [Further Reading](#further-reading)
 - [todo](#todo)
