@@ -16,7 +16,7 @@ jobs:
       - run: npx prettier --check .
       - run: npm run test:github
       - run: docker build --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-base --file ./docker/base/Dockerfile .
-      - run: docker build --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-service:$(date +%s) --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-service:latest --file ./docker/service/Dockerfile .
+      - run: docker build --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-service:${{github.event.release.tag_name}} --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-service:latest --file ./docker/service/Dockerfile .
       - run: docker login --username ${{secrets.DOCKER_USER}} --password ${{secrets.DOCKER_PASSWORD}}
       - run: docker push --all-tags ${{secrets.DOCKER_USER}}/node-oracledb-experiment-service
         env:
