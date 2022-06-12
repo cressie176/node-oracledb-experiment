@@ -1,5 +1,5 @@
 {
-  "name": "oracledb-experiment-service",
+  "name": "node-oracledb-experiment",
   "version": "1.0.0",
   "description": "Experimenting with Node.js and OracleDB",
   "main": "dist/src/index.js",
