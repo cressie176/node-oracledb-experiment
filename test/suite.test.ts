@@ -11,7 +11,7 @@ const initDatabase = new Hook(
     await database.start();
     await database.stop();
   },
-  { timeout: 20000 }
+  { timeout: 60000 }
 );
 
 const disableLogger = new Hook('Disable Logger', () => {

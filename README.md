@@ -167,7 +167,3 @@ According to the [documentation](https://oracle.github.io/node-oracledb/doc/api.
 ## Further Reading
 
 1. https://oracle.github.io/node-oracledb/doc/api.html
-
-## TODO
-
-- github action for test and build
