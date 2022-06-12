@@ -1,0 +1,24 @@
+name: Docker CI
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - run: npm ci
+      - run: npx prettier --check .
+      - run: npm run test:github
+      - run: docker build --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-base --file ./docker/base/Dockerfile .
+      - run: docker build --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-app:$(date +%s) --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-app:latest --file ./docker/app/Dockerfile .
+        env:
+          DOCKER_USER: ${{secrets.DOCKER_USER}}
+          DOCKER_PASSWORD: ${{secrest.DOCKER_PASSWORD}}
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+      - run: docker push ${{secrets.DOCKER_USER}}/node-oracledb-experiment-app

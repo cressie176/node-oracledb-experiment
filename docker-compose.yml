@@ -21,6 +21,7 @@ services:
 
   app:
     build: docker/base
+    image: cressie176/node-oracledb-experiment
     ports:
       - 3000:3000
     working_dir: /users/root/app/dist

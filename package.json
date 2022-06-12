@@ -12,7 +12,8 @@
     "clean": "rimraf dist/*",
     "build": "npm run clean && tsc",
     "build:watch": "nodemon --watch 'src/**' --watch 'test/**' --watch 'package.json' --ext '*' --exec npm run build",
-    "postbuild": "npm run copysrc && npm run copytest",
+    "postbuild": "npm run copypkg && npm run copysrc && npm run copytest",
+    "copypkg": "cpy --no-overwrite 'package-lock.json' dist",
     "copysrc": "cpy --no-overwrite 'src/**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' dist/src",
     "copytest": "cpy --no-overwrite 'test/**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' dist/test",
     "prepare": "husky install"
