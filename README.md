@@ -9,6 +9,7 @@ Experimenting with Node.js and OracleDB
   - [Accessing Oracle](#accessing-oracle)
 - [Configuration](#configuration)
 - [API](#api)
+  - [GET /__/health](#get-__health
 - [Design Decisions](#design-decisions)
 - [Further Reading](#further-reading)
 - [todo](#todo)
