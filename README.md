@@ -84,7 +84,7 @@ https://oracle.github.io/node-oracledb/doc/api.html
 
    ```
 
-1. Check it is working by navigating to http://localhost:3000/\_\_/health
+1. Check it is working by navigating to [healthcheck url](http://localhost:3000/__/health)
 
 ## Running Tests
 
