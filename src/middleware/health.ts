@@ -13,5 +13,5 @@ export default (database: Database) => async (req: Request, res: Response) => {
   } catch (err) {
     logger.error(err);
   }
-  return res.json({ ok });
+  res.json({ ok });
 };
