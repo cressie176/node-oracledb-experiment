@@ -19,6 +19,6 @@ jobs:
       - run: docker build --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-app:$(date +%s) --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-app:latest --file ./docker/app/Dockerfile .
         env:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
-          DOCKER_PASSWORD: ${{secrest.DOCKER_PASSWORD}}
+          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
       - run: docker push ${{secrets.DOCKER_USER}}/node-oracledb-experiment-app
