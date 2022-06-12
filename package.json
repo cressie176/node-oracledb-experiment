@@ -1,5 +1,5 @@
 {
-  "name": "oracledb-experiment",
+  "name": "oracledb-experiment-service",
   "version": "1.0.0",
   "description": "Experimenting with Node.js and OracleDB",
   "main": "dist/src/index.js",
@@ -22,7 +22,7 @@
     "type": "git",
     "url": "git+https://github.com/cressie176/node-oracledb-experiment.git"
   },
-  "author": "",
+  "author": "Stephen Cresswell",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/cressie176/node-oracledb-experiment/issues"
@@ -55,5 +55,9 @@
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3",
     "zunit": "^3.2.1"
+  },
+  "types": "./dist/src/index.d.ts",
+  "directories": {
+    "test": "test"
   }
 }
