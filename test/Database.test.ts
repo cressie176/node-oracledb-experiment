@@ -2,7 +2,7 @@ import { ok, strictEqual as eq, rejects } from 'assert';
 import { afterEach, beforeEach, describe, it } from 'zunit';
 import Database, { DatabaseOptions } from '../src/Database';
 import { DBError } from 'oracledb';
-import logger from '../src/LoggerFactory';
+import logger from '../src/logger';
 
 export default describe('Database', () => {
   beforeEach(() => {
@@ -13,18 +13,18 @@ export default describe('Database', () => {
     logger.enable();
   });
 
-  it('should connect', async () => {
+  it('should start', async () => {
     const database = getDatabase();
-    await database._connect();
-    const connected = await database.validate();
-    ok(connected);
+    await database.start();
+    const started = await database.validate();
+    ok(started);
   });
 
-  it('should reject attempts to repeatedly connect', async () => {
+  it('should reject repeated start attempts without stopping', async () => {
     const database = getDatabase();
-    await database._connect();
+    await database.start();
     await rejects(
-      () => database._connect(),
+      () => database.start(),
       (err: Error) => {
         eq(err.message, 'Already connected');
         return true;
@@ -32,10 +32,10 @@ export default describe('Database', () => {
     );
   });
 
-  it('should disconnect', async () => {
+  it('should stop', async () => {
     const database = getDatabase();
-    await database._connect();
-    await database._disconnect();
+    await database.start();
+    await database.stop();
     await rejects(
       () => database.validate(),
       (err: Error) => {
@@ -45,23 +45,32 @@ export default describe('Database', () => {
     );
   });
 
-  it('should tolerate disconnecting when never connected', async () => {
+  it('should tolerate stopping when never started', async () => {
     const database = getDatabase();
-    await database._disconnect();
+    await database.stop();
   });
 
-  it('should tolerate disconnecting repeatedly', async () => {
+  it('should tolerate stopping repeatedly', async () => {
     const database = getDatabase();
-    await database._connect();
-    await database._disconnect();
-    await database._disconnect();
+    await database.start();
+    await database.stop();
+    await database.stop();
+  });
+
+  it('should restart', async () => {
+    const database = getDatabase();
+    await database.start();
+    await database.stop();
+    await database.start();
+    const started = await database.validate();
+    ok(started);
   });
 
   it('should throw connection errors', async () => {
     const database = getDatabase({ user: 'invalid', maxAttempts: 1 });
 
     await rejects(
-      () => database._connect(),
+      () => database.start(),
       (err: DBError) => {
         eq(err.errorNum, 1017);
         return true;
@@ -77,7 +86,7 @@ export default describe('Database', () => {
 
     const before = Date.now();
     await rejects(
-      () => database._connect(),
+      () => database.start(),
       (err: DBError) => {
         eq(err.errorNum, 1017);
         return true;

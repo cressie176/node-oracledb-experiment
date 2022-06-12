@@ -3,7 +3,9 @@ import { setTimeout } from 'timers/promises';
 import marv from 'marv/api/promise';
 import driver from 'marv-oracledb-driver';
 import path from 'path';
-import logger from './LoggerFactory';
+import logger from './logger';
+
+let oracleClientInitialised = false;
 
 export type DatabaseOptions = {
   libDir: string;
@@ -24,6 +26,7 @@ const defaultDatabaseOptions = {
 class Database implements Component {
   private _options: DatabaseOptions;
   private _connection: oracledb.Connection;
+  private _initialised: any;
 
   constructor(options: DatabaseOptions) {
     this._options = { ...defaultDatabaseOptions, ...options };
@@ -39,14 +42,22 @@ class Database implements Component {
   }
 
   async stop() {
-    this._disconnect();
+    await this._disconnect();
   }
 
-  _init() {
+  async validate() {
+    if (!this._connection) throw new Error('Not connected');
+    const result = await this._connection.execute('SELECT 1 FROM DUAL');
+    return result && result.rows && result.rows.length === 1;
+  }
+
+  private _init() {
+    if (oracleClientInitialised) return;
     oracledb.initOracleClient(this._options);
+    oracleClientInitialised = true;
   }
 
-  async _migrate() {
+  private async _migrate() {
     const { user, password, connectionString } = this._options;
     const directory = path.resolve('src', 'sql', 'migrations');
     const migrations = await marv.scan(directory);
@@ -64,7 +75,7 @@ class Database implements Component {
     );
   }
 
-  async _connect() {
+  private async _connect() {
     if (this._connection) throw new Error('Already connected');
     const { maxAttempts, retryInterval } = this._options;
     let attempt = 0;
@@ -75,7 +86,7 @@ class Database implements Component {
     } while (!this._connection && attempt < maxAttempts);
   }
 
-  async _attemptConnection(attempt: number) {
+  private async _attemptConnection(attempt: number) {
     const { user, password, connectionString, maxAttempts } = this._options;
     try {
       logger.info(`Connecting to ${connectionString} attempt ${attempt} of ${maxAttempts}`);
@@ -87,13 +98,7 @@ class Database implements Component {
     }
   }
 
-  async validate() {
-    if (!this._connection) throw new Error('Not connected');
-    const result = await this._connection.execute('SELECT 1 FROM DUAL');
-    return result && result.rows && result.rows.length === 1;
-  }
-
-  async _disconnect() {
+  private async _disconnect() {
     if (!this._connection) return;
     await this._connection.close();
     this._connection = null;

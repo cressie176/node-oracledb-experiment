@@ -17,6 +17,8 @@ services:
 
   app:
     build: docker/base
+    ports:
+      - 3000:3000
     working_dir: /users/root/app/dist
     command: npx nodemon -L src/index.js
     environment:
@@ -25,7 +27,6 @@ services:
       - NODE_ORACLEDB_CONNECTION_STRING=oracledb:1521/XE
       - NODE_ORACLEDB_MIGRATE=true
       - NODE_ENV=production
-      - DEBUG=marv:*
     volumes:
       - ./:/users/root/app
     depends_on:

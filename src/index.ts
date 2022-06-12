@@ -1,24 +1,14 @@
-import Database from './Database';
-import { Logger } from 'tripitaka';
-const logger = new Logger();
-
-const signals = ['SIGINT', 'SIGTERM'];
+import Application from './Application';
+import logger from './logger';
 
 (async () => {
-  const database = new Database({
-    libDir: process.env.LD_LIBRARY_PATH,
-    user: process.env.NODE_ORACLEDB_USER,
-    password: process.env.NODE_ORACLEDB_PASSWORD,
-    connectionString: process.env.NODE_ORACLEDB_CONNECTION_STRING,
-    maxAttempts: Number(process.env.NODE_ORACLEDB_CONNECTION_MAX_ATTEMPTS) || undefined,
-    retryInterval: Number(process.env.NODE_ORACLEDB_CONNECTION_RETRY_INTERVAL) || undefined,
-    migrate: Boolean(process.env.NODE_ORACLEDB_MIGRATE) || undefined
-  });
-  await database.start();
+  const application = new Application();
+  await application.start();
 
-  signals.forEach((signal) => {
+  ['SIGINT', 'SIGTERM'].forEach((signal) => {
     process.once(signal, async () => {
-      await database.stop();
+      logger.info(`Received ${signal}, commencing shutdown`);
+      await application.stop();
     });
   });
 })();
