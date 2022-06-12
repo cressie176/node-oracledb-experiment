@@ -162,7 +162,7 @@ class Database implements Component {
   private _init() {
     oracledb.initOracleClient(this._options);
     oracledb.autoCommit = true;
-    oracledb.errorOnConcurrentExecute = true;
+    oracledb.errorOnConcurrentExecute = this._options.errorOnConcurrentExecute;
     oracleClientInitialised = true;
   }
 
