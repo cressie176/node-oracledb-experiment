@@ -23,13 +23,14 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
   res.once('finish', function () {
     request.duration = Date.now() - request.start;
     request.statusCode = this.statusCode;
+    const message = `${request.method} ${request.url} ${request.statusCode}`;
 
     if (request.statusCode < 400) {
-      logger.info(`${request.method} ${request.url} ${request.statusCode}`, { request });
+      logger.info(message, { request });
     } else if (request.statusCode < 500) {
-      logger.warn(`${request.method} ${request.url} ${request.statusCode}`, { request });
+      logger.warn(message, { request });
     } else {
-      logger.error(`${request.method} ${request.url} ${request.statusCode}`, { request });
+      logger.error(message, { request });
     }
   });
 
