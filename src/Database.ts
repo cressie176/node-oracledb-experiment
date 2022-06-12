@@ -47,7 +47,7 @@ type UserAccount = {
   lockedAt?: Date;
 };
 
-class Database implements Component {
+export default class Database implements Component {
   private _options: CanonicalDatabaseOptions;
   private _connection: oracledb.Connection;
 
@@ -218,5 +218,3 @@ class Database implements Component {
 function loadSql(fileName: string) {
   return fs.readFileSync(path.join('src', 'sql', 'queries', fileName), 'utf-8');
 }
-
-export default Database;
