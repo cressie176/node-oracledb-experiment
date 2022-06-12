@@ -50,23 +50,23 @@ You can get access to the local oracle container using the following properties
 
 #### Local Application Database
 
-| Name     | Value         | Notes |
-| -------- | ------------- | ----- |
-| user     | app_user      |       |
-| password | test_password |       |
-| hostname | localhost     |       |
-| port     | 1521          |       |
-| service  | XEPDB1        |       |
+| Name     | Value         |
+| -------- | ------------- |
+| user     | app_user      |
+| password | test_password |
+| hostname | localhost     |
+| port     | 1521          |
+| service  | XEPDB1        |
 
 #### Local Test Container
 
-| Name     | Value         | Notes |
-| -------- | ------------- | ----- |
-| user     | test_user     |       |
-| password | test_password |       |
-| hostname | localhost     |       |
-| port     | 1522          |       |
-| service  | XEPDB1        |       |
+| Name     | Value         |
+| -------- | ------------- |
+| user     | test_user     |
+| password | test_password |
+| hostname | localhost     |
+| port     | 1522          |
+| service  | XEPDB1        |
 
 You can also exec into the running oracle containers in order to run sqlplus
 
@@ -146,7 +146,7 @@ Applications which use oracle require a [local installation](https://oracle.gith
 
 ### Connection management
 
-According to [the documentation](https://oracle.github.io/node-oracledb/doc/api.html#parallelism), the node oracledb driver connections cannot be used concurrently, but it is safe to share a connection with proper use of async/await. A low traffic application may consider creating a new connection per request, providing it is careful to always disconnect. A better alternative for low traffic applications is to use single shared connection, and tp consider what happens if the connection is closed. This application assumes that the platform will monitor it's health endpoint and restart it if the endpoingt reports that it is unhealthy. Busy applications should always use a connection pool.
+According to the [documentation](https://oracle.github.io/node-oracledb/doc/api.html#parallelism), the node oracledb driver connections cannot be used concurrently, but it is safe to share a connection with proper use of async/await. A low traffic application may consider creating a new connection per request, providing it is careful to always disconnect. A better alternative for low traffic applications is to use single shared connection, and tp consider what happens if the connection is closed. This application assumes that the platform will monitor it's health endpoint and restart it if the endpoingt reports that it is unhealthy. Busy applications should always use a connection pool.
 
 ## Further Reading
 
