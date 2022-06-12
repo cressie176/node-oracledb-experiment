@@ -6,11 +6,11 @@ import marv from 'marv/api/promise';
 import driver from 'marv-oracledb-driver';
 import logger from './logger';
 
-const GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME = fs.readFileSync(path.join('src', 'sql', 'queries', 'get-user-account-by-system-and-username.sql'), 'utf-8');
-const CREATE_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'create-user-account.sql'), 'utf-8');
-const RESET_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'reset-user-account.sql'), 'utf-8');
-const LOCK_USER_ACCOUNT_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'lock-user-account.sql'), 'utf-8');
-const DELETE_TEST_USER_ACCOUNTS_SQL = fs.readFileSync(path.join('src', 'sql', 'queries', 'delete-test-user-accounts.sql'), 'utf-8');
+const GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME = loadSql('get-user-account-by-system-and-username.sql');
+const CREATE_USER_ACCOUNT_SQL = loadSql('create-user-account.sql');
+const RESET_USER_ACCOUNT_SQL = loadSql('reset-user-account.sql');
+const LOCK_USER_ACCOUNT_SQL = loadSql('lock-user-account.sql');
+const DELETE_TEST_USER_ACCOUNTS_SQL = loadSql('delete-test-user-accounts.sql');
 
 const DEFAULT_DATABASE_CONNECTION_MAX_ATTEMPTS = 100;
 const DEFAULT_DATABASE_CONNECTION_RETRY_INTERVAL = 1000;
@@ -213,6 +213,10 @@ class Database implements Component {
     await this._connection.close();
     this._connection = null;
   }
+}
+
+function loadSql(fileName: string) {
+  return fs.readFileSync(path.join('src', 'sql', 'queries', fileName), 'utf-8');
 }
 
 export default Database;
