@@ -26,6 +26,8 @@ export default () => async (req: Request, res: Response, next: NextFunction) => 
 
     if (request.statusCode < 400) {
       logger.info(`${request.method} ${request.url} ${request.statusCode}`, { request });
+    } else if (request.statusCode < 500) {
+      logger.warn(`${request.method} ${request.url} ${request.statusCode}`, { request });
     } else {
       logger.error(`${request.method} ${request.url} ${request.statusCode}`, { request });
     }
