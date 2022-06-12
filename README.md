@@ -1,5 +1,8 @@
 # node-oracledb-experiment
 
+[![Node.js CI](https://github.com/cressie176/node-oracledb-experiment/workflows/Node.js%20CI/badge.svg)](https://github.com/cressie176/node-oracledb-experiment?query=workflow%3A%22Node.js+CI%22)
+[![Code Style](https://img.shields.io/badge/code%20style-prettier-brightgreen.svg)](https://github.com/prettier/prettier)
+
 Experimenting with Node.js and OracleDB
 
 ## Contents
