@@ -7,6 +7,9 @@ export type ErrorResponse = {
 
 export default () => (err: Error, req: Request, res: Response, next: NextFunction) => {
   logger.error(err);
-  res.status(500);
-  res.json({ message: 'Internal Server Error' });
+  if (err.name === 'ValidationError') {
+    res.status(400).json(err);
+  } else {
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 };

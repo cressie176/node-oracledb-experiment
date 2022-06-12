@@ -31,7 +31,8 @@
     "marv": "^5.0.0",
     "marv-oracledb-driver": "^1.0.1",
     "oracledb": "^5.4.0",
-    "tripitaka": "^3.0.2"
+    "tripitaka": "^3.0.2",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/bent": "^7.3.2",

@@ -73,26 +73,28 @@ class Database implements Component {
     return result && result.rows && result.rows.length === 1;
   }
 
-  async getUserAccount(criteria: { system: string; username: string }): Promise<UserAccount> {
+  async getUserAccount({ system, username }: { system: string; username: string }): Promise<UserAccount> {
+    logger.debug('getUserAccount', { system, username });
     const result = await this._connection.execute(
       GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME,
       {
         system: {
-          val: criteria.system
+          val: system
         },
         username: {
-          val: criteria.username
+          val: username
         }
       },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
 
-    if (result.rows.length > 1) throw new Error(`Multiple accounts for ${{ criteria }}`);
+    if (result.rows.length > 1) throw new Error(`Multiple accounts for ${system}/${username}`);
     if (result.rows.length === 0) return null;
     return result.rows[0] as any;
   }
 
   async createUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
+    logger.debug('createUserAccount', { system, username });
     const { rowsAffected } = await this._connection.execute(CREATE_USER_ACCOUNT_SQL, {
       system: {
         val: system
@@ -108,6 +110,7 @@ class Database implements Component {
   }
 
   async resetUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
+    logger.debug('resetUserAccount', { system, username });
     const { rowsAffected } = await this._connection.execute(RESET_USER_ACCOUNT_SQL, {
       system: {
         val: system
@@ -124,6 +127,7 @@ class Database implements Component {
   }
 
   async lockUserAccount({ system, username }: { system: string; username: string }) {
+    logger.debug('lockUserAccount', { system, username });
     const result = await this._connection.execute(LOCK_USER_ACCOUNT_SQL, {
       system: {
         val: system

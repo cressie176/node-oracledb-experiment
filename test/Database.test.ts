@@ -100,13 +100,13 @@ export default describe('Database', () => {
   describe('create user account', () => {
     it('should create a user account', async () => {
       await startNewDatabase();
-      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'mellon' });
 
       const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
 
       eq(userAccount.system, 'Moria');
       eq(userAccount.username, 'Gandalf1954');
-      eq(userAccount.password, 'friend');
+      eq(userAccount.password, 'mellon');
       eq(userAccount.lockedAt, null);
     });
   });
@@ -114,38 +114,38 @@ export default describe('Database', () => {
   describe('reset user account', () => {
     it('should reset a user account', async () => {
       await startNewDatabase();
-      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'mellon' });
       await database.lockUserAccount({ system: 'Moria', username: 'Gandalf1954' });
       let userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
       ok(userAccount.lockedAt);
 
-      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'coth' });
 
       userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
-      eq(userAccount.password, 'enemy');
+      eq(userAccount.password, 'coth');
       eq(userAccount.lockedAt, null);
     });
 
     it('should tolerate reseting an unlocked user account', async () => {
       await startNewDatabase();
-      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'mellon' });
 
-      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'coth' });
 
       const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
-      eq(userAccount.password, 'enemy');
+      eq(userAccount.password, 'coth');
       eq(userAccount.lockedAt, null);
     });
 
     it('should ignore other user accounts in the same system', async () => {
       await startNewDatabase();
-      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'mellon' });
       await database.createUserAccount({ system: 'Moria', username: 'Frodo2020', password: 'whatever' });
 
       await database.lockUserAccount({ system: 'Moria', username: 'Gandalf1954' });
       await database.lockUserAccount({ system: 'Moria', username: 'Frodo2020' });
 
-      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'coth' });
 
       const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Frodo2020' });
       ok(userAccount.lockedAt);
@@ -153,13 +153,13 @@ export default describe('Database', () => {
 
     it('should ignore user accounts in other systems', async () => {
       await startNewDatabase();
-      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'friend' });
-      await database.createUserAccount({ system: 'The Shire', username: 'Gandalf1954', password: 'friend' });
+      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'mellon' });
+      await database.createUserAccount({ system: 'The Shire', username: 'Gandalf1954', password: 'mellon' });
 
       await database.lockUserAccount({ system: 'Moria', username: 'Gandalf1954' });
       await database.lockUserAccount({ system: 'The Shire', username: 'Gandalf1954' });
 
-      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' });
+      await database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'coth' });
 
       const userAccount = await database.getUserAccount({ system: 'The Shire', username: 'Gandalf1954' });
       ok(userAccount.lockedAt);
@@ -167,7 +167,7 @@ export default describe('Database', () => {
 
     it('should report missing user accounts', async () => {
       await startNewDatabase();
-      await rejects(database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'enemy' }), (err: Error) => {
+      await rejects(database.resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'coth' }), (err: Error) => {
         eq(err.message, 'Error reseting user account for Moria/Gandalf1954');
         return true;
       });

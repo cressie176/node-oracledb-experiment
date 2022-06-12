@@ -12,7 +12,7 @@ export default (database: Database): Express => {
   const app = express();
   app.use(helmet());
   app.disable('etag');
-  bodyParser.json();
+  app.use(bodyParser.json());
   app.use('/api', apiRouter(app, database));
   app.use('/__', systemRouter(app, database));
   app.use(notFound());
