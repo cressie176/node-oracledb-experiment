@@ -1,7 +1,6 @@
 import { ok, strictEqual as eq, rejects } from 'assert';
 import { afterEach, beforeEach, describe, it } from 'zunit';
 import bent from 'bent';
-import logger from '../src/logger';
 import Application from '../src/Application';
 import Database from '../src/Database';
 import { HealthResponse } from '../src/middleware/health';
@@ -13,16 +12,11 @@ export default describe('Application', () => {
   let database: Database;
 
   beforeEach(async () => {
-    logger.disable();
     await startApplication();
   });
 
   afterEach(async () => {
     await stopApplication();
-  });
-
-  afterEach(async () => {
-    logger.enable();
   });
 
   describe('/__/health', () => {

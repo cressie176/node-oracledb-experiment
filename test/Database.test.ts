@@ -2,22 +2,13 @@ import { ok, strictEqual as eq, rejects } from 'assert';
 import { afterEach, beforeEach, describe, it } from 'zunit';
 import Database from '../src/Database';
 import { DBError } from 'oracledb';
-import logger from '../src/logger';
 
 export default describe('Database', () => {
   let database: Database;
 
-  beforeEach(() => {
-    logger.disable();
-  });
-
   afterEach(async () => {
     await database.deleteTestData();
     await database.stop();
-  });
-
-  afterEach(() => {
-    logger.enable();
   });
 
   describe('startup / shutdown', () => {
