@@ -88,7 +88,7 @@ sqlplus app_user/app_password@XEPDB1
 | DATABASE_CONNECTION_RETRY_INTERVAL        | Number  | 1000    | The number of milliseconds the application will wait before attempting to reconnect to the database on startup                                                                                                                                |
 | DATABASE_MIGRATE                          | Boolean | false   | Will run database migrations on startup when true                                                                                                                                                                                             |
 | HTTP_SERVER_PORT                          | Number  | 3000    | The HTTP port to listen on                                                                                                                                                                                                                    |
-| DEBUG                                     | String  |         | Many of the bundled node libraries use [debug](https://www.npmjs.com/package/debug). Set this environment variable to DEBUG=_ to enable all debug or something like DEBUG=marv:_,express:\* to selectively enable debug for a specific module |
+| DEBUG                                     | String  |         | Many of the bundled node libraries use [debug](https://www.npmjs.com/package/debug). Set this environment variable to `DEBUG=*` to enable all debug or something like `DEBUG=marv:*,express:\*` to selectively enable debug for a specific module |
 
 ## API
 
