@@ -121,6 +121,12 @@ sqlplus app_user/app_password@XEPDB1
 | 400  | Bad Request            |
 | 500  | Internal Server Errror |
 
+#### Sample Request
+
+```
+curl -X POST -H 'Content-Type: application/json' -d '{ "system": "Moria", "username": "Gandalf1954", "password": "mellon" }' http://localhost:3000/api/user-account
+```
+
 ### POST /api/user-account/reset
 
 #### Request Body
@@ -138,6 +144,12 @@ sqlplus app_user/app_password@XEPDB1
 | 204  | Success (no content)   |
 | 400  | Bad Request            |
 | 500  | Internal Server Errror |
+
+#### Sample Request
+
+```
+curl -X POST -H 'Content-Type: application/json' -d '{ "system": "Moria", "username": "Gandalf1954", "password": "mellon" }' http://localhost:3000/api/user-account/reset
+```
 
 ## Design Decisions
 
