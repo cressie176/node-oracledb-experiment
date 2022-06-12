@@ -33,6 +33,7 @@ services:
       - NODE_ORACLEDB_PASSWORD=app_password
       - NODE_ORACLEDB_CONNECTION_STRING=oracledb-app:1521/XEPDB1
       - DATABASE_MIGRATE=true
+      - LOGGING_LEVEL=DEBUG
     volumes:
       - ./:/users/root/app
     depends_on:

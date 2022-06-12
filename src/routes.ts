@@ -5,6 +5,7 @@ import Database from './Database';
 import health from './middleware/health';
 import notFound from './middleware/notFound';
 import error from './middleware/error';
+import logRequest from './middleware/logRequest';
 import createUserAccount from './middleware/createUserAccount';
 import resetUserAccount from './middleware/resetUserAccount';
 
@@ -22,8 +23,8 @@ export default (database: Database): Express => {
 
 function apiRouter(app: Express, database: Database) {
   const router = Router();
-  router.post('/user-account', createUserAccount(database));
-  router.post('/user-account/reset', resetUserAccount(database));
+  router.post('/user-account', logRequest(), createUserAccount(database));
+  router.post('/user-account/reset', logRequest(), resetUserAccount(database));
   return router;
 }
 

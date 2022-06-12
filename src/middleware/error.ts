@@ -6,7 +6,6 @@ export type ErrorResponse = {
 };
 
 export default () => (err: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.error(err);
   if (err.name === 'ValidationError') {
     res.status(400).json(err);
   } else {

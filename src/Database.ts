@@ -74,7 +74,7 @@ class Database implements Component {
   }
 
   async getUserAccount({ system, username }: { system: string; username: string }): Promise<UserAccount> {
-    logger.debug('getUserAccount', { system, username });
+    logger.debug('getUserAccount', { account: { system, username } });
     const result = await this._connection.execute(
       GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME,
       {
@@ -94,7 +94,7 @@ class Database implements Component {
   }
 
   async createUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
-    logger.debug('createUserAccount', { system, username });
+    logger.debug('createUserAccount', { account: { system, username } });
     const { rowsAffected } = await this._connection.execute(CREATE_USER_ACCOUNT_SQL, {
       system: {
         val: system
@@ -110,7 +110,7 @@ class Database implements Component {
   }
 
   async resetUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
-    logger.debug('resetUserAccount', { system, username });
+    logger.debug('resetUserAccount', { account: { system, username } });
     const { rowsAffected } = await this._connection.execute(RESET_USER_ACCOUNT_SQL, {
       system: {
         val: system
@@ -127,7 +127,7 @@ class Database implements Component {
   }
 
   async lockUserAccount({ system, username }: { system: string; username: string }) {
-    logger.debug('lockUserAccount', { system, username });
+    logger.debug('lockUserAccount', { account: { system, username } });
     const result = await this._connection.execute(LOCK_USER_ACCOUNT_SQL, {
       system: {
         val: system
