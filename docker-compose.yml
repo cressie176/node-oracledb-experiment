@@ -24,7 +24,7 @@ services:
     ports:
       - 3000:3000
     working_dir: /users/root/app/dist
-    command: npx nodemon -L src/index.js
+    command: npx ts-node src/index.js
     environment:
       - NODE_ENV=production
       - LD_LIBRARY_PATH=/opt/instantclient_21_6
@@ -42,7 +42,7 @@ services:
   test:
     build: docker/base
     working_dir: /users/root/app/dist
-    command: npx nyc --reporter text-summary ts-node test
+    command: npx ts-node test/index.js
     environment:
       - LD_LIBRARY_PATH=/opt/instantclient_21_6
       - NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE=true

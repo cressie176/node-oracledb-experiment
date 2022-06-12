@@ -6,6 +6,8 @@ Experimenting with Node.js and OracleDB
 
 - [Local Setup](#local-setup)
   - [Prerequisits](#prerequisits)
+  - [Installation](#installation)
+  - [Development](#development)
   - [Accessing Oracle](#accessing-oracle)
 - [Configuration](#configuration)
 - [API](#api)
@@ -30,19 +32,20 @@ Experimenting with Node.js and OracleDB
    ```
    git clone git@github.com:cressie176/node-oracledb-experiment.git
    ```
-1. Run npm install
+1. Install the dependencies
    ```
    cd node-oracledb-experiment
-   npm i
+   npm install
    ```
 1. Test the application (may take a while when first run due to database initialisation)
    ```
-   npm t
+   npm test
    ```
-1. Start the application (may take a while and report several errors when first run due to database initialisation)
-   ```
-   npm run dev
-   ```
+
+### Development
+
+Because of the dependency on Oracle client libraries the application is run and tested in a local docker container. To do this once, run
+`npm run dev` or `npm test`. If you are making a series of changes you may find it easier to run `npm run dev:watch` or `npm run test:watch` in one terminal and `npm run build:watch` in a second terminal.
 
 ### Accessing Oracle
 
@@ -58,7 +61,7 @@ You can get access to the local oracle container using the following properties
 | port     | 1521          |
 | service  | XEPDB1        |
 
-#### Local Test Container
+#### Local Test Database
 
 | Name     | Value         |
 | -------- | ------------- |
@@ -167,5 +170,4 @@ According to the [documentation](https://oracle.github.io/node-oracledb/doc/api.
 
 ## TODO
 
-- Configure the watchers to detect changes and update the app container automatically
 - github action for test and build

@@ -5,9 +5,12 @@
   "main": "dist/src/index.js",
   "scripts": {
     "dev": "npm run build && docker-compose run --service-ports --no-TTY app",
+    "dev:watch": "npm run build && docker-compose run --service-ports --no-TTY app npx nodemon --delay 2000ms --watch '**/*' --ext '*' --exec ts-node src/index.js",
     "test": "npm run build && docker-compose run --service-ports --no-TTY test",
+    "test:watch": "npm run build && docker-compose run --service-ports --no-TTY app npx nodemon --delay 2000ms --watch '**/*' --ext '*' --exec nyc --reporter text-summary ts-node test/index.js",
     "clean": "rimraf dist/*",
     "build": "npm run clean && tsc",
+    "build:watch": "nodemon --watch 'src/**' --watch 'test/**' --watch 'package.json' --ext '*' --exec npm run build",
     "postbuild": "npm run copysrc && npm run copytest",
     "copysrc": "cpy --no-overwrite 'src/**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' dist/src",
     "copytest": "cpy --no-overwrite 'test/**/*' '!**/*.ts' '!**/*.tsx' '!**/_test_/*.tsx' dist/test",
