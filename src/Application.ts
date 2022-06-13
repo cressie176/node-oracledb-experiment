@@ -28,6 +28,10 @@ export default class Application implements Component {
     logger.info('Stopped');
   }
 
+  get isRunning() {
+    return this._webServer.isRunning && this._database.isRunning;
+  }
+
   get baseUrl(): string {
     return this._webServer.baseUrl;
   }

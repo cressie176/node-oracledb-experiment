@@ -67,6 +67,10 @@ export default class Database implements Component {
     await this._disconnect();
   }
 
+  get isRunning() {
+    return Boolean(this._connection);
+  }
+
   async validate() {
     if (!this._connection) throw new Error('Not connected');
     const result = await this._connection.execute('SELECT 1 FROM DUAL');
@@ -142,6 +146,7 @@ export default class Database implements Component {
   }
 
   async deleteTestData() {
+    if (process.env.NODE_ENV !== 'test') throw new Error(`Attempt ot delete data in ${process.env.NODE_ENV} environment`)
     if (!this._connection) return;
     await this._connection.execute(DELETE_TEST_USER_ACCOUNTS_SQL);
   }

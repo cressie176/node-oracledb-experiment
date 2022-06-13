@@ -33,10 +33,15 @@ export default class WebServer implements Component {
       if (!this._server) return;
       this._server.close((err) => {
         if (err) return reject(err);
+        this._server = null;
         logger.info(`WebServer has stopped listening`);
         resolve();
       });
     });
+  }
+
+  get isRunning() {
+    return Boolean(this._server);
   }
 
   get baseUrl(): string {
