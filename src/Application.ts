@@ -3,15 +3,13 @@ import WebServer from './WebServer';
 import logger from './logger';
 import routes from './routes';
 
-const DEFAULT_HTTP_PORT = Number(process.env.HTTP_SERVER_PORT) || 3000;
-
 export default class Application implements Component {
   private _database: Database;
   private _webServer: WebServer;
 
-  constructor(database: Database = new Database(), port: number = DEFAULT_HTTP_PORT) {
+  constructor(database: Database = new Database()) {
     this._database = database;
-    this._webServer = new WebServer({ app: routes(database), port });
+    this._webServer = new WebServer({ app: routes(database) });
   }
 
   async start() {
