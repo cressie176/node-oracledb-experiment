@@ -146,7 +146,7 @@ export default class Database implements Component {
   }
 
   async deleteTestData() {
-    if (process.env.NODE_ENV !== 'test') throw new Error(`Attempt ot delete data in ${process.env.NODE_ENV} environment`);
+    if (process.env.NODE_ENV !== 'test') throw new Error(`Attempt to delete data in ${process.env.NODE_ENV} environment`);
     if (!this._connection) return;
     await this._connection.execute(DELETE_TEST_USER_ACCOUNTS_SQL);
   }
