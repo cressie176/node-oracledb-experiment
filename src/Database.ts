@@ -6,6 +6,7 @@ import marv from 'marv/api/promise';
 import driver from 'marv-oracledb-driver';
 import logger from './logger';
 
+const VALIDATE_CONNECTION_SQL = loadSql('validate-connection.sql');
 const GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME = loadSql('get-user-account-by-system-and-username.sql');
 const CREATE_USER_ACCOUNT_SQL = loadSql('create-user-account.sql');
 const RESET_USER_ACCOUNT_SQL = loadSql('reset-user-account.sql');
@@ -73,7 +74,7 @@ export default class Database implements Component {
 
   async validate() {
     if (!this._connection) throw new Error('Not connected');
-    const result = await this._connection.execute('SELECT 1 FROM DUAL');
+    const result = await this._connection.execute(VALIDATE_CONNECTION_SQL);
     return result && result.rows && result.rows.length === 1;
   }
 
