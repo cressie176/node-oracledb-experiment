@@ -159,7 +159,7 @@ export default describe('Database', () => {
     it('should ignore user accounts in other systems', async () => {
       await startNewDatabase();
       const gandalf1 = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' };
-      const gandalf2 = { system: 'The Shire', username: 'Gandalf1954', password: 'mellon' };      
+      const gandalf2 = { system: 'The Shire', username: 'Gandalf1954', password: 'mellon' };
 
       await database.createUserAccount(gandalf1);
       await database.createUserAccount(gandalf2);

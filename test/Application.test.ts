@@ -34,7 +34,7 @@ export default describe('Application', () => {
 
   describe('POST /api/user-account', async () => {
     it('should create a new user account', async () => {
-      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' }
+      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' };
       await createUserAccount(gandalf);
 
       const dbUserAccount = await database.getUserAccount(gandalf);
@@ -56,7 +56,7 @@ export default describe('Application', () => {
 
   describe('POST /api/user-account/reset', async () => {
     it('should reset an existing account', async () => {
-      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' }      
+      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' };
       await database.createUserAccount(gandalf);
       await database.lockUserAccount(gandalf);
 
@@ -79,8 +79,8 @@ export default describe('Application', () => {
     });
 
     it('should report a missing account', async () => {
-      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' }
-      const { message } = await resetUserAccount({ ...gandalf, password: 'coth' }, 500) as ErrorResponse;
+      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' };
+      const { message } = (await resetUserAccount({ ...gandalf, password: 'coth' }, 500)) as ErrorResponse;
       eq(message, 'Internal Server Error');
     });
   });
