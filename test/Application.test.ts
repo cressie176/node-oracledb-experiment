@@ -1,5 +1,5 @@
-import { ok, strictEqual as eq, rejects } from 'assert';
-import { afterEach, beforeEach, describe, it } from 'zunit';
+import { strictEqual as eq } from 'assert';
+import { after, before, beforeEach, describe, it } from 'zunit';
 import bent, { BentResponse } from 'bent';
 import { ValidationError } from 'yup';
 import Application from '../src/Application';
@@ -11,12 +11,18 @@ export default describe('Application', () => {
   let application: Application;
   let database: Database;
 
-  beforeEach(async () => {
-    await startApplication();
+  before(async () => {
+    database = new Database({ migrate: true });
+    application = new Application(database);
+    await application.start();
   });
 
-  afterEach(async () => {
-    await stopApplication();
+  beforeEach(async () => {
+    await database.deleteTestData();
+  });
+
+  after(async () => {
+    application.stop();
   });
 
   describe('/__/health', () => {
@@ -26,9 +32,13 @@ export default describe('Application', () => {
     });
 
     it('returns unhealthy', async () => {
-      await database.stop();
-      const { ok } = await health();
-      eq(ok, false);
+      try {
+        await database.stop();
+        const { ok } = await health();
+        eq(ok, false);
+      } finally {
+        await database.start();
+      }
     });
   });
 
@@ -91,17 +101,6 @@ export default describe('Application', () => {
       eq(message, 'Not Found');
     });
   });
-
-  async function startApplication() {
-    database = new Database({ migrate: true });
-    application = new Application(database);
-    await application.start();
-    await database.deleteTestData();
-  }
-
-  async function stopApplication() {
-    return application.stop();
-  }
 
   async function health(): Promise<HealthResponse> {
     return request({ path: '/__/health' });
