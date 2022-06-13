@@ -34,13 +34,14 @@ export default describe('Application', () => {
 
   describe('POST /api/user-account', async () => {
     it('should create a new user account', async () => {
-      await createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'mellon' });
+      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' }
+      await createUserAccount(gandalf);
 
-      const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
-      eq(userAccount.system, 'Moria');
-      eq(userAccount.username, 'Gandalf1954');
-      eq(userAccount.password, 'mellon');
-      eq(userAccount.lockedAt, null);
+      const dbUserAccount = await database.getUserAccount(gandalf);
+      eq(dbUserAccount.system, 'Moria');
+      eq(dbUserAccount.username, 'Gandalf1954');
+      eq(dbUserAccount.password, 'mellon');
+      eq(dbUserAccount.lockedAt, null);
     });
 
     it('should report missing properties', async () => {
@@ -55,16 +56,17 @@ export default describe('Application', () => {
 
   describe('POST /api/user-account/reset', async () => {
     it('should reset an existing account', async () => {
-      await database.createUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'mellon' });
-      await database.lockUserAccount({ system: 'Moria', username: 'Gandalf1954' });
+      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' }      
+      await database.createUserAccount(gandalf);
+      await database.lockUserAccount(gandalf);
 
-      await resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'coth' });
+      await resetUserAccount({ ...gandalf, password: 'coth' });
 
-      const userAccount = await database.getUserAccount({ system: 'Moria', username: 'Gandalf1954' });
-      eq(userAccount.system, 'Moria');
-      eq(userAccount.username, 'Gandalf1954');
-      eq(userAccount.password, 'coth');
-      eq(userAccount.lockedAt, null);
+      const dbUserAccount = await database.getUserAccount(gandalf);
+      eq(dbUserAccount.system, 'Moria');
+      eq(dbUserAccount.username, 'Gandalf1954');
+      eq(dbUserAccount.password, 'coth');
+      eq(dbUserAccount.lockedAt, null);
     });
 
     it('should report missing properties', async () => {
@@ -77,7 +79,8 @@ export default describe('Application', () => {
     });
 
     it('should report a missing account', async () => {
-      const { message } = (await resetUserAccount({ system: 'Moria', username: 'Gandalf1954', password: 'coth' }, 500)) as ErrorResponse;
+      const gandalf = { system: 'Moria', username: 'Gandalf1954', password: 'mellon' }
+      const { message } = await resetUserAccount({ ...gandalf, password: 'coth' }, 500) as ErrorResponse;
       eq(message, 'Internal Server Error');
     });
   });
