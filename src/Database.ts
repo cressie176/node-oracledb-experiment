@@ -83,12 +83,8 @@ export default class Database implements Component {
     const result = await this._connection.execute(
       GET_USER_ACCOUNT_BY_SYSTEM_AND_USERNAME,
       {
-        system: {
-          val: system
-        },
-        username: {
-          val: username
-        }
+        system: val(system),
+        username: val(username)
       },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
     );
@@ -101,15 +97,9 @@ export default class Database implements Component {
   async createUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
     logger.debug('createUserAccount', { account: { system, username } });
     const { rowsAffected } = await this._connection.execute(CREATE_USER_ACCOUNT_SQL, {
-      system: {
-        val: system
-      },
-      username: {
-        val: username
-      },
-      password: {
-        val: password
-      }
+      system: val(system),
+      username: val(username),
+      password: val(password)
     });
     if (rowsAffected !== 1) throw new Error(`Error inserting user account for ${system}/${username}`);
   }
@@ -117,15 +107,9 @@ export default class Database implements Component {
   async resetUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
     logger.debug('resetUserAccount', { account: { system, username } });
     const { rowsAffected } = await this._connection.execute(RESET_USER_ACCOUNT_SQL, {
-      system: {
-        val: system
-      },
-      username: {
-        val: username
-      },
-      password: {
-        val: password
-      }
+      system: val(system),
+      username: val(username),
+      password: val(password)
     });
 
     if (rowsAffected !== 1) throw new Error(`Error reseting user account for ${system}/${username}`);
@@ -134,15 +118,9 @@ export default class Database implements Component {
   async lockUserAccount({ system, username }: { system: string; username: string }) {
     logger.debug('lockUserAccount', { account: { system, username } });
     const result = await this._connection.execute(LOCK_USER_ACCOUNT_SQL, {
-      system: {
-        val: system
-      },
-      username: {
-        val: username
-      },
-      lockedAt: {
-        val: new Date()
-      }
+      system: val(system),
+      username: val(username),
+      lockedAt: val(new Date())
     });
   }
 
@@ -223,4 +201,8 @@ export default class Database implements Component {
 
 function loadSql(fileName: string) {
   return fs.readFileSync(path.join('src', 'sql', 'queries', fileName), 'utf-8');
+}
+
+function val(val: any) {
+  return { val };
 }
