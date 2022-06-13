@@ -91,7 +91,7 @@ export default class Database implements Component {
 
     if (result.rows.length > 1) throw new Error(`Multiple accounts for ${system}/${username}`);
     if (result.rows.length === 0) return null;
-    return result.rows[0] as any;
+    return result.rows[0] as UserAccount;
   }
 
   async createUserAccount({ system, username, password }: { system: string; username: string; password: string }) {
