@@ -34,6 +34,8 @@ CMD node test/index.js
 ##############################################################################
 FROM builder 
 
+ENV NODE_ENV=production
+
 RUN npm prune --production
 
 USER node
