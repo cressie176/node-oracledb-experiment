@@ -7,7 +7,7 @@
     "dev": "npm run build && docker-compose run --service-ports app",
     "dev:watch": "npm run build && docker-compose run --service-ports app npx nodemon --delay 2000ms --watch '**/*' --ext '*' --exec ts-node src/index.js",
     "test": "npm run build && docker-compose run --no-TTY test",
-    "test:watch": "npm run build && docker-compose run app npx nodemon --delay 2000ms --watch '**/*' --ext '*' --exec nyc --reporter text-summary ts-node test/index.js",
+    "test:watch": "npm run build && docker-compose run test npx nodemon --delay 2000ms --watch '**/*' --ext '*' --exec nyc --reporter text-summary ts-node test/index.js",
     "test:github": "npm run build && docker-compose run test",
     "clean": "rimraf dist/*",
     "build": "npm run clean && tsc",

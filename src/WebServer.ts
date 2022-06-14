@@ -2,7 +2,7 @@ import { Express } from 'express';
 import { Server } from 'http';
 import logger from './logger';
 
-const DEFAULT_HTTP_PORT = 3000;
+const DEFAULT_HTTP_SERVER_PORT = 3000;
 
 export type WebServerOptions = {
   app: Express;
@@ -16,7 +16,7 @@ export default class WebServer implements Component {
 
   constructor(options: WebServerOptions) {
     this._app = options.app;
-    this._port = options.port || Number(process.env.HTTP_SERVER_PORT) || DEFAULT_HTTP_PORT;
+    this._port = options.port || Number(process.env.HTTP_SERVER_PORT) || DEFAULT_HTTP_SERVER_PORT;
     this._server = null;
   }
 

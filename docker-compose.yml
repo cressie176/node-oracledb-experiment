@@ -20,39 +20,39 @@ services:
       APP_USER_PASSWORD: test_password
 
   app:
-    build: docker/base
+    build:
+      context: .
+      target: builder
     image: cressie176/node-oracledb-experiment
     ports:
       - 3000:3000
-    working_dir: /users/root/app/dist
     command: npx ts-node src/index.js
     environment:
-      - NODE_ENV=production
-      - LD_LIBRARY_PATH=/opt/instantclient_21_6
-      - NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE=true
-      - NODE_ORACLEDB_USER=app_user
-      - NODE_ORACLEDB_PASSWORD=app_password
-      - NODE_ORACLEDB_CONNECTION_STRING=oracledb-app:1521/XEPDB1
-      - DATABASE_MIGRATE=true
-      - LOGGING_LEVEL=DEBUG
+      NODE_ENV: production
+      NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE: true
+      NODE_ORACLEDB_USER: app_user
+      NODE_ORACLEDB_PASSWORD: app_password
+      NODE_ORACLEDB_CONNECTION_STRING: oracledb-app:1521/XEPDB1
+      DATABASE_MIGRATE: true
+      LOGGING_LEVEL: DEBUG
     volumes:
-      - ./:/users/root/app
+      - ./:/home/node/node-oracledb-experiment
     depends_on:
       - oracledb-app
 
   test:
-    build: docker/base
-    working_dir: /users/root/app/dist
+    build:
+      context: .
+      target: builder
     command: npx ts-node test/index.js
     environment:
-      - LD_LIBRARY_PATH=/opt/instantclient_21_6
-      - NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE=true
-      - NODE_ENV=test
-      - NODE_ORACLEDB_USER=test_user
-      - NODE_ORACLEDB_PASSWORD=test_password
-      - NODE_ORACLEDB_CONNECTION_STRING=oracledb-test:1521/XEPDB1
-      - DATABASE_MIGRATE=true
+      NODE_ENV: test
+      NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE: true
+      NODE_ORACLEDB_USER: test_user
+      NODE_ORACLEDB_PASSWORD: test_password
+      NODE_ORACLEDB_CONNECTION_STRING: oracledb-test:1521/XEPDB1
+      DATABASE_MIGRATE: true
     volumes:
-      - ./:/users/root/app
+      - ./:/home/node/node-oracledb-experiment
     depends_on:
       - oracledb-test
