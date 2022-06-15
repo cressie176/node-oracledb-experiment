@@ -11,7 +11,7 @@ const initDatabase = new Hook(
     await database.start();
     await database.stop();
   },
-  { timeout: 60000 }
+  { timeout: 300000 } // GitHub action takes a very long time
 );
 
 const disableLogger = new Hook('Disable Logger', () => {
