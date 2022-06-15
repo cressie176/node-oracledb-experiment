@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   oracledb-app:
-    image: gvenzl/oracle-xe
+    image: gvenzl/oracle-xe:21.3.0
     ports:
       - 1521:1521
     environment:
@@ -11,7 +11,7 @@ services:
       APP_USER_PASSWORD: app_password
 
   oracledb-test:
-    image: gvenzl/oracle-xe
+    image: gvenzl/oracle-xe:21.3.0
     ports:
       - 1522:1521
     environment:
