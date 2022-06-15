@@ -20,7 +20,7 @@ WORKDIR /home/node/node-oracledb-experiment
 
 ADD dist/package.json .
 ADD dist/package-lock.json .
-RUN npm ci
+RUN npm clean-install --ignore-scripts
 ADD . .
 
 RUN npm run build
