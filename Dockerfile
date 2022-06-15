@@ -18,8 +18,8 @@ RUN useradd --create-home node
 RUN mkdir -p /home/node/node-oracledb-experiment
 WORKDIR /home/node/node-oracledb-experiment
 
-ADD dist/package.json .
-ADD dist/package-lock.json .
+ADD package.json .
+ADD package-lock.json .
 RUN npm clean-install --ignore-scripts
 ADD . .
 
