@@ -15,7 +15,7 @@ jobs:
       - run: docker build --target builder --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-test .
       - run: docker network create test
       - run: docker run -d --network test --name oracledb-test -e ORACLE_PASSWORD=password -e APP_USER=app_user -e APP_USER_PASSWORD=app_password gvenzl/oracle-xe:21.3.0
-      - run: docker run -it ---network test -e NODE_ENV=test -e NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE=true -e NODE_ORACLEDB_USER=test_user -e NODE_ORACLEDB_PASSWORD=test_password -e NODE_ORACLEDB_CONNECTION_STRING=oracledb-test:1521/XEPDB1 -e DATABASE_MIGRATE=true ${{secrets.DOCKER_USER}}/node-oracledb-experiment-test
+      - run: docker run -it --network test -e NODE_ENV=test -e NODE_ORACLEDB_ERROR_ON_CONCURRENT_EXECUTE=true -e NODE_ORACLEDB_USER=test_user -e NODE_ORACLEDB_PASSWORD=test_password -e NODE_ORACLEDB_CONNECTION_STRING=oracledb-test:1521/XEPDB1 -e DATABASE_MIGRATE=true ${{secrets.DOCKER_USER}}/node-oracledb-experiment-test
       - run: docker build --tag ${{secrets.DOCKER_USER}}/node-oracledb-experiment-service:${{ github.sha }}-${{ github.run_number }} .
       - run: docker login --username ${{secrets.DOCKER_USER}} --password ${{secrets.DOCKER_PASSWORD}}
       - run: docker push --all-tags ${{secrets.DOCKER_USER}}/node-oracledb-experiment-service
