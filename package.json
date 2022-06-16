@@ -32,7 +32,7 @@
     "express": "^4.18.1",
     "helmet": "^5.1.0",
     "marv": "^5.0.0",
-    "marv-oracledb-driver": "^1.0.1",
+    "marv-oracledb-driver": "^2.0.0",
     "oracledb": "^5.4.0",
     "tripitaka": "^3.0.2",
     "yup": "^0.32.11"
